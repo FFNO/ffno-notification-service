@@ -1,7 +1,7 @@
+import { MailerService } from '@nestjs-modules/mailer';
 import { Inject, Injectable } from '@nestjs/common';
 import * as OneSignal from 'onesignal-node';
-import { EmailPayload, NotificationPayload } from './app.controller';
-import { MailerService } from '@nestjs-modules/mailer';
+import { EmailPayload, NotificationPayload } from 'src/libs';
 
 @Injectable()
 export class AppService {
