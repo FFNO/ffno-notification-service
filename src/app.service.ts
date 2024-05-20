@@ -11,7 +11,12 @@ export class AppService {
     private readonly mailerService: MailerService,
   ) {}
 
-  async sendNotification({ title, content, memberId }: NotificationPayload) {
+  async sendNotification({
+    title,
+    content,
+    memberId,
+    link,
+  }: NotificationPayload) {
     console.log({ title, content, memberId });
 
     try {
@@ -26,10 +31,11 @@ export class AppService {
             relation: '=',
           },
         ],
+        url: link,
       });
-      console.log(response.body);
       return response;
     } catch (error) {
+      console.log('Error happened when send push notification');
       console.error(error);
     }
   }
