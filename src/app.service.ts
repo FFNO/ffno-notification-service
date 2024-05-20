@@ -14,19 +14,24 @@ export class AppService {
   async sendNotification({ title, content, memberId }: NotificationPayload) {
     console.log({ title, content, memberId });
 
-    const response = await this.client.createNotification({
-      headings: { en: title },
-      contents: { en: content },
-      filters: [
-        {
-          field: 'tag',
-          key: 'memberId',
-          value: memberId,
-          relation: '=',
-        },
-      ],
-    });
-    return response;
+    try {
+      const response = await this.client.createNotification({
+        headings: { en: title },
+        contents: { en: content },
+        filters: [
+          {
+            field: 'tag',
+            key: 'memberId',
+            value: memberId,
+            relation: '=',
+          },
+        ],
+      });
+      console.log(response.body);
+      return response;
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   async sendEmail({ to, subject, template, context }: EmailPayload) {
