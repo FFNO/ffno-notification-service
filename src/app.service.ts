@@ -8,6 +8,8 @@ export class AppService {
   constructor(
     @Inject('webPushClient')
     private readonly client: OneSignal.Client,
+    @Inject('tenantWebPushClient')
+    private readonly client2: OneSignal.Client,
     private readonly mailerService: MailerService,
   ) {}
 
@@ -21,6 +23,19 @@ export class AppService {
 
     try {
       const response = await this.client.createNotification({
+        headings: { en: title },
+        contents: { en: content },
+        filters: [
+          {
+            field: 'tag',
+            key: 'memberId',
+            value: memberId,
+            relation: '=',
+          },
+        ],
+        url: link,
+      });
+      await this.client2.createNotification({
         headings: { en: title },
         contents: { en: content },
         filters: [
