@@ -9,6 +9,8 @@ import { join } from 'path';
 
 const webPushClient = 'webPushClient';
 
+const tenantWebPushClient = 'tenantWebPushClient';
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -41,6 +43,15 @@ const webPushClient = 'webPushClient';
       useFactory: (configService: ConfigService) => {
         const appId = configService.get('ONE_SIGNAL_APP_ID');
         const apiKey = configService.get('ONE_SIGNAL_API_KEY');
+        return new OneSignal.Client(appId, apiKey);
+      },
+      inject: [ConfigService],
+    },
+    {
+      provide: tenantWebPushClient,
+      useFactory: (configService: ConfigService) => {
+        const appId = configService.get('ONE_SIGNAL_APP_ID_2');
+        const apiKey = configService.get('ONE_SIGNAL_API_KEY_2');
         return new OneSignal.Client(appId, apiKey);
       },
       inject: [ConfigService],

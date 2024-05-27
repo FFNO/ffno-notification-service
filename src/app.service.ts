@@ -1,32 +1,58 @@
+import { MailerService } from '@nestjs-modules/mailer';
 import { Inject, Injectable } from '@nestjs/common';
 import * as OneSignal from 'onesignal-node';
-import { EmailPayload, NotificationPayload } from './app.controller';
-import { MailerService } from '@nestjs-modules/mailer';
+import { EmailPayload, NotificationPayload } from 'src/libs';
 
 @Injectable()
 export class AppService {
   constructor(
     @Inject('webPushClient')
     private readonly client: OneSignal.Client,
+    @Inject('tenantWebPushClient')
+    private readonly client2: OneSignal.Client,
     private readonly mailerService: MailerService,
   ) {}
 
-  async sendNotification({ title, content, memberId }: NotificationPayload) {
+  async sendNotification({
+    title,
+    content,
+    memberId,
+    link,
+  }: NotificationPayload) {
     console.log({ title, content, memberId });
 
-    const response = await this.client.createNotification({
-      headings: { en: title },
-      contents: { en: content },
-      filters: [
-        {
-          field: 'tag',
-          key: 'memberId',
-          value: memberId,
-          relation: '=',
-        },
-      ],
-    });
-    return response;
+    try {
+      const response = await this.client.createNotification({
+        headings: { en: title },
+        contents: { en: content },
+        filters: [
+          {
+            field: 'tag',
+            key: 'memberId',
+            value: memberId,
+            relation: '=',
+          },
+        ],
+        url: link,
+      });
+      await this.client2.createNotification({
+        headings: { en: title },
+        contents: { en: content },
+        filters: [
+          {
+            field: 'tag',
+            key: 'memberId',
+            value: memberId,
+            relation: '=',
+          },
+        ],
+        url: link,
+      });
+      return response;
+    } catch (error) {
+      console.log('Error happened when send push notification');
+      console.error(error);
+    }
   }
 
   async sendEmail({ to, subject, template, context }: EmailPayload) {
